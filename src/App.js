@@ -1,4 +1,4 @@
-// App.js
+
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./components/AuthContext";
@@ -12,7 +12,11 @@ import TeamCreation from "./components/TeamCreation";
 import TeamDashboard from "./components/TeamDashboard";
 import LandingPage from "./components/LandingPage"
 import CRM from "./components/CRM";
+import PeopleManagement from "./components/PeopleManagement";
+import InvitationPage from "./components/InvitationPage";
+import GenerateInvitation from "./components/GenerativeInvitation";
 import { useAuthState } from "react-firebase-hooks/auth";
+
 
 const ProtectedRoute = ({ children }) => {
   const { currentUser } = useAuth();
@@ -25,6 +29,7 @@ function App() {
     <Router>
      
         <Routes>
+         
           <Route path="/" element={<LandingPage />} />
           <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard/></Layout></ProtectedRoute>}/>
           <Route path="/login" element={<Login />} />
@@ -34,6 +39,9 @@ function App() {
           <Route path="/team-creation" element={<Layout><TeamCreation /></Layout>} />
           <Route path="/team-dashboard" element={<Layout><TeamDashboard /></Layout>} />
           <Route path="/CRM" element={<Layout><CRM/></Layout>} />
+          <Route path="/PeopleManagement" element={<Layout><PeopleManagement/></Layout>} />
+          <Route path="/generate-invitation" element={<GenerateInvitation />} />
+          <Route path="/invite/:token" element={<InvitationPage />} />
           
         </Routes>
      

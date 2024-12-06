@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebaseConfig";
 import { collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot } from "firebase/firestore";
-import { TextField, Button, Typography, Box, List, Card, CardContent, CardActions, IconButton, Divider } from "@mui/material";
+import { TextField, Button, Typography, Box, List, Card, CardContent, CardActions, IconButton, Divider, MenuItem, Select } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
@@ -9,12 +9,22 @@ import CancelIcon from "@mui/icons-material/Cancel";
 
 const TeamCreation = () => {
   const [teamName, setTeamName] = useState("");
-  const [memberEmail, setMemberEmail] = useState("");
+  const [selectedMember, setSelectedMember] = useState(""); // To store selected member's name
   const [members, setMembers] = useState([]);
   const [teams, setTeams] = useState([]);
   const [editMode, setEditMode] = useState(null);
   const [editTeamName, setEditTeamName] = useState("");
   const [editMembers, setEditMembers] = useState([]);
+  const [peopleList, setPeopleList] = useState([]); // List of people from the people management page
+
+  // Fetch all people in real-time (those added through People Management page)
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "people"), (snapshot) => {
+      const peopleData = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setPeopleList(peopleData);
+    });
+    return unsubscribe; // Cleanup listener on component unmount
+  }, []);
 
   // Fetch teams in real-time
   useEffect(() => {
@@ -26,9 +36,9 @@ const TeamCreation = () => {
   }, []);
 
   const handleAddMember = () => {
-    if (memberEmail) {
-      setMembers([...members, memberEmail]);
-      setMemberEmail("");
+    if (selectedMember && !members.includes(selectedMember)) {
+      setMembers([...members, selectedMember]);
+      setSelectedMember(""); // Reset selected member field
     }
   };
 
@@ -37,7 +47,7 @@ const TeamCreation = () => {
     try {
       await addDoc(collection(db, "teams"), {
         name: teamName,
-        members, // Store emails of invited members
+        members,
         createdAt: new Date(),
       });
       setTeamName("");
@@ -83,9 +93,9 @@ const TeamCreation = () => {
   };
 
   const handleAddMemberToEdit = () => {
-    if (memberEmail && !editMembers.includes(memberEmail)) {
-      setEditMembers([...editMembers, memberEmail]);
-      setMemberEmail(""); // Reset member input field
+    if (selectedMember && !editMembers.includes(selectedMember)) {
+      setEditMembers([...editMembers, selectedMember]);
+      setSelectedMember("");
     }
   };
 
@@ -102,13 +112,22 @@ const TeamCreation = () => {
             fullWidth
             sx={{ mb: 2 }}
           />
-          <TextField
-            label="Member Email"
-            value={memberEmail}
-            onChange={(e) => setMemberEmail(e.target.value)}
+          <Select
+            value={selectedMember}
+            onChange={(e) => setSelectedMember(e.target.value)}
             fullWidth
+            displayEmpty
             sx={{ mb: 2 }}
-          />
+          >
+            <MenuItem value="" disabled>
+              Add a member
+            </MenuItem>
+            {peopleList.map((person) => (
+              <MenuItem key={person.id} value={person.name}>
+                {person.name}
+              </MenuItem>
+            ))}
+          </Select>
           <Button variant="contained" onClick={handleAddMember} sx={{ mb: 2 }}>
             Add Member
           </Button>
@@ -137,19 +156,23 @@ const TeamCreation = () => {
                     fullWidth
                     sx={{ mb: 2 }}
                   />
-                  <TextField
-                    label="Edit Member Email"
-                    placeholder="Add a member"
-                    value={memberEmail}
-                    onChange={(e) => setMemberEmail(e.target.value)}
+                  <Select
+                    value={selectedMember}
+                    onChange={(e) => setSelectedMember(e.target.value)}
                     fullWidth
-                    sx={{ mb: 2 }}
-                  />
-                  <Button
-                    variant="outlined"
-                    onClick={handleAddMemberToEdit}
+                    displayEmpty
                     sx={{ mb: 2 }}
                   >
+                    <MenuItem value="" disabled>
+                      Add a member
+                    </MenuItem>
+                    {peopleList.map((person) => (
+                      <MenuItem key={person.id} value={person.name}>
+                        {person.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <Button variant="outlined" onClick={handleAddMemberToEdit} sx={{ mb: 2 }}>
                     Add Member
                   </Button>
                   <Typography>Members: {editMembers.join(", ")}</Typography>

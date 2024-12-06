@@ -11,21 +11,23 @@ import {
   Divider,
   Collapse,
   IconButton,
-  Tooltip,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../firebaseConfig";
 import { signOut } from "firebase/auth";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import TaskIcon from "@mui/icons-material/Assignment";
-import ListIcon from "@mui/icons-material/List";
-import GroupIcon from "@mui/icons-material/Group";
-import LogoutIcon from "@mui/icons-material/Logout";
-import BusinessIcon from "@mui/icons-material/Business";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import MenuOpenIcon from "@mui/icons-material/MenuOpen";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import {
+  Dashboard as DashboardIcon,
+  Assignment as TaskIcon,
+  List as ListIcon,
+  Group as GroupIcon,
+  Logout as LogoutIcon,
+  Business as BusinessIcon,
+  ExpandLess,
+  ExpandMore,
+  MenuOpen as MenuOpenIcon,
+  AccountCircle as AccountCircleIcon,
+  AddCircleOutline,
+} from "@mui/icons-material";
 
 const drawerWidth = 240;
 const compactDrawerWidth = 60;
@@ -54,15 +56,16 @@ const Layout = ({ children }) => {
   };
 
   const handleTeamClick = () => {
-    setTeamOpen(!teamOpen);
+    setTeamOpen((prev) => !prev);
   };
 
   const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen);
+    setDrawerOpen((prev) => !prev);
   };
 
   return (
     <Box sx={{ display: "flex", bgcolor: "#f4f6f8", minHeight: "100vh" }}>
+      {/* Top Navigation Bar */}
       <AppBar
         position="fixed"
         sx={{
@@ -78,7 +81,7 @@ const Layout = ({ children }) => {
         </Toolbar>
       </AppBar>
 
-      {/* Sidebar (Drawer) */}
+      {/* Sidebar */}
       <Drawer
         variant="permanent"
         open={drawerOpen}
@@ -96,6 +99,7 @@ const Layout = ({ children }) => {
       >
         <Toolbar />
         <List>
+          {/* Navigation Links */}
           <ListItem button component={Link} to="/dashboard" aria-label="Dashboard">
             <DashboardIcon sx={{ color: "white", mr: drawerOpen ? 2 : 0 }} />
             {drawerOpen && <ListItemText primary="Dashboard" />}
@@ -106,11 +110,15 @@ const Layout = ({ children }) => {
           </ListItem>
           <ListItem button component={Link} to="/todo-list" aria-label="Tasks">
             <ListIcon sx={{ color: "white", mr: drawerOpen ? 2 : 0 }} />
-            {drawerOpen && <ListItemText primary="Task" />}
+            {drawerOpen && <ListItemText primary="Tasks" />}
           </ListItem>
           <ListItem button component={Link} to="/crm" aria-label="CRM">
             <BusinessIcon sx={{ color: "white", mr: drawerOpen ? 2 : 0 }} />
             {drawerOpen && <ListItemText primary="CRM" />}
+          </ListItem>
+          <ListItem button component={Link} to="/PeopleManagement" aria-label="People Management">
+            <AddCircleOutline sx={{ color: "white", mr: drawerOpen ? 2 : 0 }} />
+            {drawerOpen && <ListItemText primary="People Management" />}
           </ListItem>
 
           {/* Team Section */}
@@ -122,10 +130,10 @@ const Layout = ({ children }) => {
           <Collapse in={teamOpen && drawerOpen} timeout="auto" unmountOnExit>
             <List component="div" disablePadding sx={{ pl: 4 }}>
               <ListItem button component={Link} to="/team-creation" aria-label="Create Team">
-                <ListItemText primary="Team Creation" />
+                <ListItemText primary="Create Team" />
               </ListItem>
               <ListItem button component={Link} to="/team-dashboard" aria-label="Team Dashboard">
-                <ListItemText primary="Team Dashboard" />
+                <ListItemText primary="Assign Task" />
               </ListItem>
             </List>
           </Collapse>
@@ -133,28 +141,25 @@ const Layout = ({ children }) => {
 
         <Box sx={{ flexGrow: 1 }} />
 
+        {/* Divider */}
         <Divider />
 
-        {/* User Info */}
+        {/* User Info & Logout */}
         <List>
           {user && (
             <ListItem sx={{ display: "flex", alignItems: "center" }}>
               <AccountCircleIcon sx={{ color: "white", mr: drawerOpen ? 2 : 0 }} />
               {drawerOpen && (
                 <Typography variant="subtitle1" sx={{ color: "white" }}>
-                  {user.fullName || 'Full Name'}
+                  {user.displayName || "User"}
                 </Typography>
               )}
             </ListItem>
           )}
-
-          {/* Logout button */}
           <ListItem button onClick={handleLogout} aria-label="Logout">
             <LogoutIcon sx={{ color: "white", mr: drawerOpen ? 2 : 0 }} />
             {drawerOpen && <ListItemText primary="Logout" />}
           </ListItem>
-
-          {/* Toggle Drawer Button */}
           <ListItem button onClick={handleDrawerToggle} sx={{ justifyContent: "center" }} aria-label="Toggle Drawer">
             <MenuOpenIcon
               sx={{
@@ -166,14 +171,13 @@ const Layout = ({ children }) => {
         </List>
       </Drawer>
 
-      {/* Main content area */}
+      {/* Main Content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           p: 4,
           bgcolor: "#f4f6f8",
-          position: "relative",
         }}
       >
         <Toolbar />

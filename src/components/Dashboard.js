@@ -249,22 +249,23 @@ const Dashboard = () => {
       {/* Team Creation */}
       <TeamCreation />
 
-      {/* Notifications */}
+      {/* Notifications
       <Box sx={{ mt: 5 }}>
         <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>Notifications</Typography>
         {upcomingNotifications.map((notification) => (
           <Typography key={notification.id}>{notification.message}</Typography>
         ))}
-      </Box>
+      </Box> */}
 
       {/* Logout Button */}
-      <Box sx={{ mt: 3 }}>
+      {/* <Box sx={{ mt: 3 }}>
         <Tooltip title="Log out">
           <IconButton onClick={handleLogout} color="secondary">
             Logout
           </IconButton>
         </Tooltip>
-      </Box>
+      </Box> */}
+      
     </Box>
   );
 };
